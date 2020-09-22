@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Custom
+bindings/*
+build/*
+.idea/*
+cmake-build-debug/*
