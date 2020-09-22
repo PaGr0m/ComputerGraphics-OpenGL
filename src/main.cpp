@@ -80,8 +80,10 @@ void mouse_offset(ImGuiIO &io) {
     ImVec2 delta = ImGui::GetMouseDragDelta();
     ImGui::ResetMouseDragDelta();
 
-    offset.x -= delta.x / display.x;
-    offset.y += delta.y / display.y;
+    float mouse_speed = 1.8;
+
+    offset.x -= delta.x / display.x * mouse_speed * zoom;
+    offset.y += delta.y / display.y * mouse_speed * zoom;
 }
 
 void load_texture(const std::string &filename) {
@@ -90,10 +92,15 @@ void load_texture(const std::string &filename) {
 
     unsigned char *data = stbi_load(texture_path.c_str(), &texture_x, &texture_y, &channels, 0);
     if (data) {
-        glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, texture_x, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        std::string extension = texture_path.substr(texture_path.length() - 3);
+        if (extension == "png") {
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, texture_x, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        } else if (extension == "jpg") {
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, texture_x, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        }
         glGenerateMipmap(GL_TEXTURE_1D);
     } else {
-        std::cerr << fmt::format("Failed to load texture: {}", resources_dir);
+        std::cerr << fmt::format("Failed to load texture: {}", texture_path);
     }
 
     stbi_image_free(data);
@@ -101,8 +108,15 @@ void load_texture(const std::string &filename) {
 
 int main(int, char **) {
     const std::vector<const char *> textures = {
-            "texture.png",
-            "texture.png"
+            "Texture-1.png",
+            "Texture-2.jpg",
+            "Texture-3.jpg",
+            "Texture-4.jpg",
+            "Texture-5.jpg",
+            "Texture-6.jpg",
+            "Texture-7.png",
+            "Texture-8.jpg",
+            "Texture-9.jpg"
     };
     std::string current_texture_filename = textures[0];
 

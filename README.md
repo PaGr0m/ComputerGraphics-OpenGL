@@ -15,6 +15,8 @@
 Далее запускаем `build/OpenGL-Fractal`
 
 ## Примеры
-![](screenshots/GUI.gif)
+![](screenshots/Example-1.gif)
+![](screenshots/Example-2.gif)
+![](screenshots/Example-3.gif)
 ![](screenshots/Fractal.png)
 ![](screenshots/Fractal-2.png)
