@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-2-triangles CXX)
+project(Lesson-3-textures CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -10,9 +10,10 @@ find_package(glfw CONFIG)
 find_package(glew CONFIG)
 find_package(fmt CONFIG)
 find_package(glm CONFIG)
+find_package(stb CONFIG)
 
 add_executable(
-        Lesson-2-triangles
+        Lesson-3-textures
 
         src/main.cpp
         src/shader.cpp
@@ -25,22 +26,23 @@ add_executable(
 )
 
 add_custom_command(
-        TARGET Lesson-2-triangles
+        TARGET Lesson-3-textures
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-2-triangles
+        Lesson-3-textures
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-2-triangles
+        Lesson-3-textures
         imgui::imgui
         GLEW::glew_s
         glfw::glfw
         fmt::fmt
         glm::glm
+        stb::stb
 )
