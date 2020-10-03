@@ -1,4 +1,5 @@
 #pragma once
+#define STB_IMAGE_IMPLEMENTATION
 
 #include <iostream>
 #include <stb_image.h>
@@ -58,8 +59,7 @@ unsigned int load_texture(const std::string &filepath) {
 
     int width, height, nrComponents;
     unsigned char *data = stbi_load(filepath.c_str(), &width, &height, &nrComponents, 0);
-    if (data)
-    {
+    if (data) {
         GLenum format;
         if (nrComponents == 1)
             format = GL_RED;
@@ -78,9 +78,7 @@ unsigned int load_texture(const std::string &filepath) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
-    }
-    else
-    {
+    } else {
         std::cout << "Texture failed to load at path: " << filepath << std::endl;
         stbi_image_free(data);
     }

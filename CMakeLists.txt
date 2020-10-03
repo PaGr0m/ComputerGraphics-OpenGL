@@ -3,6 +3,7 @@ project(Lesson-9-multiple-lighting-sources CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+set(CMAKE_CXX_STANDARD 17)
 
 # CONFIG option is important so that CMake doesnt search for modules into the default modules directory
 find_package(imgui CONFIG)
@@ -11,6 +12,7 @@ find_package(glew CONFIG)
 find_package(fmt CONFIG)
 find_package(glm CONFIG)
 find_package(stb CONFIG)
+find_package(assimp CONFIG)
 
 add_executable(
         Lesson-9-multiple-lighting-sources
@@ -46,4 +48,5 @@ target_link_libraries(
         fmt::fmt
         glm::glm
         stb::stb
+        assimp::assimp
 )

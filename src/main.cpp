@@ -1,8 +1,7 @@
-#define STB_IMAGE_IMPLEMENTATION
-
 #include "shader.h"
 #include "camera.h"
 #include "initials.h"
+
 
 int main() {
     GLFWwindow *window = init_opengl();
@@ -118,8 +117,7 @@ int main() {
 
         // Render containers
         glBindVertexArray(cubeVAO);
-        for (auto i = 0; i < 10; i++)
-        {
+        for (auto i = 0; i < 10; i++) {
             float angle = 20.0f * i;
             model = glm::identity<glm::mat4>();
             model = glm::translate(model, cubePositions[i]);
@@ -136,8 +134,7 @@ int main() {
         lamp_shader.set_uniform("projection", glm::value_ptr(projection));
 
         glBindVertexArray(lightVAO);
-        for (auto & pointLightPosition : pointLightPositions)
-        {
+        for (auto &pointLightPosition : pointLightPositions) {
             model = glm::identity<glm::mat4>();
             model = glm::translate(model, pointLightPosition);
             model = glm::scale(model, glm::vec3(0.2f));
