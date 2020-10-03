@@ -53,22 +53,6 @@ void scroll_callback(GLFWwindow *window, double offset_x, double offset_y) {
 }
 
 unsigned int load_texture(const std::string &filepath) {
-//    int texture_x, texture_y, channels;
-//
-//    unsigned char *data = stbi_load(filepath.c_str(), &texture_x, &texture_y, &channels, 0);
-//    if (data) {
-//        std::string extension = filepath.substr(filepath.length() - 3);
-//        if (extension == "png") {
-//            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_x, texture_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-//        } else if (extension == "jpg") {
-//            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_x, texture_y, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-//        }
-//        glGenerateMipmap(GL_TEXTURE_2D);
-//    } else {
-//        std::cerr << fmt::format("Failed to load texture: {}", filepath);
-//    }
-//
-//    stbi_image_free(data);
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
@@ -165,7 +149,7 @@ GLFWwindow *init_opengl() {
     GLFWwindow *window = glfwCreateWindow(
             WINDOW_WIDTH,
             WINDOW_HEIGHT,
-            "Lesson-8-texture-map",
+            "Lesson-9-multiple-lighting-sources",
             nullptr,
             nullptr
     );

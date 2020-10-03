@@ -83,6 +83,10 @@ public:
         return position_;
     }
 
+    glm::vec3 front() const {
+        return front_;
+    }
+
 private:
     void update_camera_vectors() {
         glm::vec3 front;

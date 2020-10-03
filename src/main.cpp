@@ -22,12 +22,11 @@ int main() {
     Shader lighting_shader("assets/cube.vs", "assets/cube.fs");
     Shader lamp_shader("assets/lamp.vs", "assets/lamp.fs");
 
-    // load textures (we now use a utility function to keep the code more organized)
+    // Load textures
     unsigned int diffuseMap = load_texture("assets/container.png");
     unsigned int specularMap = load_texture("assets/container_specular.png");
 
-    // shader configuration
-    // --------------------
+    // Shader configuration
     lighting_shader.use();
     lighting_shader.set_uniform("material.diffuse", 0);
     lighting_shader.set_uniform("material.specular", 1);
@@ -47,16 +46,59 @@ int main() {
 
         // Init lighting_shader
         lighting_shader.use();
-        lighting_shader.set_uniform("light.position", lightPos);
+        // be sure to activate shader when setting uniforms/drawing objects
+        lighting_shader.use();
         lighting_shader.set_uniform("viewPos", camera.position());
+        lighting_shader.set_uniform("material.shininess", 32.0f);
 
-        // Light properties
-        lighting_shader.set_uniform("light.ambient", 0.2f, 0.2f, 0.2f);
-        lighting_shader.set_uniform("light.diffuse", 0.5f, 0.5f, 0.5f);
-        lighting_shader.set_uniform("light.specular", 1.0f, 1.0f, 1.0f);
+        // Directional light
+        lighting_shader.set_uniform("dirLight.direction", -0.2f, -1.0f, -0.3f);
+        lighting_shader.set_uniform("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        lighting_shader.set_uniform("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        lighting_shader.set_uniform("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
-        // Material properties
-        lighting_shader.set_uniform("material.shininess", 64.0f);
+        lighting_shader.set_uniform("pointLights[0].position", pointLightPositions[0]);
+        lighting_shader.set_uniform("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+        lighting_shader.set_uniform("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+        lighting_shader.set_uniform("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+        lighting_shader.set_uniform("pointLights[0].constant", 1.0f);
+        lighting_shader.set_uniform("pointLights[0].linear", 0.09f);
+        lighting_shader.set_uniform("pointLights[0].quadratic", 0.032f);
+
+        lighting_shader.set_uniform("pointLights[1].position", pointLightPositions[1]);
+        lighting_shader.set_uniform("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+        lighting_shader.set_uniform("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+        lighting_shader.set_uniform("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+        lighting_shader.set_uniform("pointLights[1].constant", 1.0f);
+        lighting_shader.set_uniform("pointLights[1].linear", 0.09f);
+        lighting_shader.set_uniform("pointLights[1].quadratic", 0.032f);
+
+        lighting_shader.set_uniform("pointLights[2].position", pointLightPositions[2]);
+        lighting_shader.set_uniform("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+        lighting_shader.set_uniform("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+        lighting_shader.set_uniform("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+        lighting_shader.set_uniform("pointLights[2].constant", 1.0f);
+        lighting_shader.set_uniform("pointLights[2].linear", 0.09f);
+        lighting_shader.set_uniform("pointLights[2].quadratic", 0.032f);
+
+        lighting_shader.set_uniform("pointLights[3].position", pointLightPositions[3]);
+        lighting_shader.set_uniform("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+        lighting_shader.set_uniform("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+        lighting_shader.set_uniform("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+        lighting_shader.set_uniform("pointLights[3].constant", 1.0f);
+        lighting_shader.set_uniform("pointLights[3].linear", 0.09f);
+        lighting_shader.set_uniform("pointLights[3].quadratic", 0.032f);
+
+        lighting_shader.set_uniform("spotLight.position", camera.position());
+        lighting_shader.set_uniform("spotLight.direction", camera.front());
+        lighting_shader.set_uniform("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+        lighting_shader.set_uniform("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        lighting_shader.set_uniform("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        lighting_shader.set_uniform("spotLight.constant", 1.0f);
+        lighting_shader.set_uniform("spotLight.linear", 0.09f);
+        lighting_shader.set_uniform("spotLight.quadratic", 0.032f);
+        lighting_shader.set_uniform("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        lighting_shader.set_uniform("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
         // Init MVP
         glm::mat4 model = glm::identity<glm::mat4>();
@@ -74,22 +116,34 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, specularMap);
 
-        // Render the cube
+        // Render containers
         glBindVertexArray(cubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (auto i = 0; i < 10; i++)
+        {
+            float angle = 20.0f * i;
+            model = glm::identity<glm::mat4>();
+            model = glm::translate(model, cubePositions[i]);
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-        // Init lamp_shader
-        model = glm::identity<glm::mat4>();
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
+            lighting_shader.set_uniform("model", glm::value_ptr(model));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
+        // Also draw the lamp object(s)
         lamp_shader.use();
         lamp_shader.set_uniform("model", glm::value_ptr(model));
         lamp_shader.set_uniform("view", glm::value_ptr(view));
         lamp_shader.set_uniform("projection", glm::value_ptr(projection));
 
         glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (auto & pointLightPosition : pointLightPositions)
+        {
+            model = glm::identity<glm::mat4>();
+            model = glm::translate(model, pointLightPosition);
+            model = glm::scale(model, glm::vec3(0.2f));
+            lighting_shader.set_uniform("model", glm::value_ptr(model));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glfwSwapBuffers(window);
     }
