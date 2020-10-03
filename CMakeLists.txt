@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-4-transformations CXX)
+project(Lesson-5-camera CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -13,10 +13,11 @@ find_package(glm CONFIG)
 find_package(stb CONFIG)
 
 add_executable(
-        Lesson-4-transformations
+        Lesson-5-camera
 
         src/main.cpp
         src/shader.cpp
+        src/camera.h
 
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
@@ -26,19 +27,19 @@ add_executable(
 )
 
 add_custom_command(
-        TARGET Lesson-4-transformations
+        TARGET Lesson-5-camera
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-4-transformations
+        Lesson-5-camera
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-4-transformations
+        Lesson-5-camera
         imgui::imgui
         GLEW::glew_s
         glfw::glfw

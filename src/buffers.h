@@ -3,7 +3,10 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-GLfloat vertices[] = {
+const GLuint WINDOW_WIDTH = 800;
+const GLuint WINDOW_HEIGHT = 600;
+
+const GLfloat vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -47,7 +50,7 @@ GLfloat vertices[] = {
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
-glm::vec3 cubePositions[] = {
+const glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f,  0.0f,  0.0f),
         glm::vec3( 2.0f,  5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
