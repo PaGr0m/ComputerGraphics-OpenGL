@@ -133,7 +133,7 @@ GLFWwindow *init_opengl() {
     GLFWwindow *window = glfwCreateWindow(
             WINDOW_WIDTH,
             WINDOW_HEIGHT,
-            "Lesson-6-PhongLightingModels",
+            "Lesson-7-materials",
             nullptr,
             nullptr
     );

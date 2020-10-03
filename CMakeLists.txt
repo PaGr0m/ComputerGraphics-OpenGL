@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-6-PhongLightingModels CXX)
+project(Lesson-7-materials CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -13,7 +13,7 @@ find_package(glm CONFIG)
 find_package(stb CONFIG)
 
 add_executable(
-        Lesson-6-PhongLightingModels
+        Lesson-7-materials
 
         src/main.cpp
         src/shader.cpp
@@ -22,24 +22,24 @@ add_executable(
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
 
-        assets/lighting.vs
-        assets/lighting.fs
+        assets/cube.vs
+        assets/cube.fs
 )
 
 add_custom_command(
-        TARGET Lesson-6-PhongLightingModels
+        TARGET Lesson-7-materials
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-6-PhongLightingModels
+        Lesson-7-materials
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-6-PhongLightingModels
+        Lesson-7-materials
         imgui::imgui
         GLEW::glew_s
         glfw::glfw

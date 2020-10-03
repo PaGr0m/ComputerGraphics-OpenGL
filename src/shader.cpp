@@ -85,6 +85,11 @@ void Shader::set_uniform<float *>(const std::string &name, float *val) {
     glUniformMatrix4fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, val);
 }
 
+template<>
+void Shader::set_uniform<glm::vec3>(const std::string &name, glm::vec3 vec) {
+    set_uniform(name, vec.x, vec.y, vec.z);
+}
+
 void Shader::check_compile_error() const {
     int success;
     char infoLog[1024];
@@ -109,3 +114,12 @@ void Shader::check_linking_error() const {
         std::cerr << "Error Linking Shader Program:\n" << infoLog << std::endl;
     }
 }
+
+template<typename T>
+void Shader::set_uniform(const std::string &name, T val) {}
+
+template<typename T>
+void Shader::set_uniform(const std::string &name, T val1, T val2) {}
+
+template<typename T>
+void Shader::set_uniform(const std::string &name, T val1, T val2, T val3) {}
