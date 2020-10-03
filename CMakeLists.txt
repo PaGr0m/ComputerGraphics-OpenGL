@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-3-textures CXX)
+project(Lesson-4-transformations CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -13,7 +13,7 @@ find_package(glm CONFIG)
 find_package(stb CONFIG)
 
 add_executable(
-        Lesson-3-textures
+        Lesson-4-transformations
 
         src/main.cpp
         src/shader.cpp
@@ -26,19 +26,19 @@ add_executable(
 )
 
 add_custom_command(
-        TARGET Lesson-3-textures
+        TARGET Lesson-4-transformations
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-3-textures
+        Lesson-4-transformations
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-3-textures
+        Lesson-4-transformations
         imgui::imgui
         GLEW::glew_s
         glfw::glfw

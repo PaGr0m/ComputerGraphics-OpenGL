@@ -1,12 +1,16 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <iostream>
+#include <stb_image.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <fmt/format.h>
-#include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "shader.h"
+#include "buffers.h"
 
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -33,42 +37,19 @@ void load_texture(const std::string &filepath) {
     stbi_image_free(data);
 }
 
-void init_buffers(GLuint &rectangleVBO, GLuint &rectangleVAO, GLuint &rectangleEBO) {
-    GLfloat vertices[] = {
-            //      3        |        3        |            2
-            // Positions     |      Colors     |    Texture Coords
-            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,     // Top Right
-            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,    // Bottom Right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,   // Bottom Left
-            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f     // Top Left
-    };
-    GLuint indices[] = {
-            0, 1, 3, // First Triangle
-            1, 2, 3  // Second Triangle
-    };
+void init_buffers(GLuint &cubeVBO, GLuint &cubeVAO) {
+    glGenVertexArrays(1, &cubeVAO);
+    glGenBuffers(1, &cubeVBO);
 
-    glGenVertexArrays(1, &rectangleVAO);
-    glGenBuffers(1, &rectangleVBO);
-    glGenBuffers(1, &rectangleEBO);
+    glBindVertexArray(cubeVAO);
 
-    glBindVertexArray(rectangleVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, rectangleVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectangleEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Positions
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *) nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *) nullptr);
     glEnableVertexAttribArray(0);
 
-    // Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
-    // Texture coordinate
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *) (6 * sizeof(GLfloat)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
@@ -132,12 +113,14 @@ int main() {
     glViewport(0, 0, frame_width, frame_height);
 
     // Buffers
-    GLuint rectangleVBO, rectangleVAO, rectangleEBO;
-    init_buffers(rectangleVBO, rectangleVAO, rectangleEBO);
+    GLuint cubeVBO, cubeVAO;
+    init_buffers(cubeVBO, cubeVAO);
 
     // Textures
     GLuint texture1, texture2;
     init_textures(texture1, texture2);
+
+    glEnable(GL_DEPTH_TEST);
 
     // Shader
     Shader shader("assets/simple.vs", "assets/simple.fs");
@@ -146,7 +129,9 @@ int main() {
         glfwPollEvents();
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shader.use();
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
@@ -156,18 +141,36 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, texture2);
         shader.set_uniform("ourTexture2", 1);
 
-        shader.use();
+        glm::mat4 view = glm::identity<glm::mat4>();
+        glm::mat4 projection = glm::identity<glm::mat4>();
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(45.0f,
+                                      GLfloat(WINDOW_WIDTH) / GLfloat(WINDOW_HEIGHT),
+                                      0.1f,
+                                      100.0f);
 
-        glBindVertexArray(rectangleVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        shader.set_uniform("view", glm::value_ptr(view));
+        shader.set_uniform("projection", glm::value_ptr(projection));
+
+        glBindVertexArray(cubeVAO);
+        for (GLuint i = 0; i < 10; ++i) {
+            glm::mat4 model = glm::identity<glm::mat4>();
+            model = glm::translate(model, cubePositions[i]);
+
+            GLfloat angle = 20.0f * i;
+            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+
+            shader.set_uniform("model", glm::value_ptr(model));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
     }
 
-    glDeleteVertexArrays(1, &rectangleVAO);
-    glDeleteBuffers(1, &rectangleVBO);
-    glDeleteBuffers(1, &rectangleEBO);
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteBuffers(1, &cubeVBO);
 
     glfwTerminate();
     return 0;

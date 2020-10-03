@@ -85,15 +85,6 @@ void Shader::set_uniform<float *>(const std::string &name, float *val) {
     glUniformMatrix4fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, val);
 }
 
-template<typename T>
-void Shader::set_uniform(const std::string &name, T val) {}
-
-template<typename T>
-void Shader::set_uniform(const std::string &name, T val1, T val2) {}
-
-template<typename T>
-void Shader::set_uniform(const std::string &name, T val1, T val2, T val3) {}
-
 void Shader::check_compile_error() const {
     int success;
     char infoLog[1024];
