@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-9-multiple-lighting-sources CXX)
+project(Lesson-10-model3D CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -15,33 +15,37 @@ find_package(stb CONFIG)
 find_package(assimp CONFIG)
 
 add_executable(
-        Lesson-9-multiple-lighting-sources
+        Lesson-10-model3D
 
         src/main.cpp
-        src/shader.cpp
-        src/camera.h
+        src/initials.h
+
+        src/utils/shader.cpp
+        src/utils/camera.h
+        src/utils/model.h
+        src/utils/mesh.h
 
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
 
-        assets/cube.vs
-        assets/cube.fs
+        assets/IronMan/iron_man.vs
+        assets/IronMan/iron_man.fs
 )
 
 add_custom_command(
-        TARGET Lesson-9-multiple-lighting-sources
+        TARGET Lesson-10-model3D
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-9-multiple-lighting-sources
+        Lesson-10-model3D
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-9-multiple-lighting-sources
+        Lesson-10-model3D
         imgui::imgui
         GLEW::glew_s
         glfw::glfw
