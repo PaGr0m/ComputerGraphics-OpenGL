@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-5-camera CXX)
+project(Lesson-6-PhongLightingModels CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -13,7 +13,7 @@ find_package(glm CONFIG)
 find_package(stb CONFIG)
 
 add_executable(
-        Lesson-5-camera
+        Lesson-6-PhongLightingModels
 
         src/main.cpp
         src/shader.cpp
@@ -22,24 +22,24 @@ add_executable(
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
 
-        assets/simple.vs
-        assets/simple.fs
+        assets/lighting.vs
+        assets/lighting.fs
 )
 
 add_custom_command(
-        TARGET Lesson-5-camera
+        TARGET Lesson-6-PhongLightingModels
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-5-camera
+        Lesson-6-PhongLightingModels
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-5-camera
+        Lesson-6-PhongLightingModels
         imgui::imgui
         GLEW::glew_s
         glfw::glfw
