@@ -1,22 +1,22 @@
 #pragma once
-//#define STB_IMAGE_IMPLEMENTATION
 
 #include <iostream>
-//#include <stb_image.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <fmt/format.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
+#include <stb_image.h>
 
+#include "buffers.h"
+#include "../bindings/imgui_impl_glfw.h"
+#include "../bindings/imgui_impl_opengl3.h"
 
-const GLuint WINDOW_WIDTH = 800;
-const GLuint WINDOW_HEIGHT = 600;
-const GLfloat RATIO = GLfloat(WINDOW_WIDTH) / GLfloat(WINDOW_HEIGHT);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 0.5f));
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 bool keys[1024];
@@ -24,13 +24,6 @@ double lastX = 400, lastY = 300;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
-
-void key_events() {
-    if (keys[GLFW_KEY_W]) camera.keyboard_events(Camera::Movement::FORWARD, deltaTime);
-    if (keys[GLFW_KEY_S]) camera.keyboard_events(Camera::Movement::BACKWARD, deltaTime);
-    if (keys[GLFW_KEY_A]) camera.keyboard_events(Camera::Movement::LEFT, deltaTime);
-    if (keys[GLFW_KEY_D]) camera.keyboard_events(Camera::Movement::RIGHT, deltaTime);
-}
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -44,99 +37,67 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 }
 
 void mouse_callback(GLFWwindow *window, double position_x, double position_y) {
-    GLfloat offset_x = position_x - lastX;
-    GLfloat offset_y = lastY - position_y;
-
-    glfwGetCursorPos(window, &lastX, &lastY);
-
-    camera.process_mouse_movement(offset_x, offset_y);
+//    GLfloat offset_x = position_x - lastX;
+//    GLfloat offset_y = lastY - position_y;
+//
+//    glfwGetCursorPos(window, &lastX, &lastY);
+//
+//    camera.process_mouse_movement(offset_x / WINDOW_HEIGHT, offset_y);
 }
 
 void scroll_callback(GLFWwindow *window, double offset_x, double offset_y) {
     camera.process_mouse_scroll(offset_y);
 }
 
-//unsigned int load_texture(const std::string &filepath) {
-//    unsigned int textureID;
-//    glGenTextures(1, &textureID);
-//
-//    int width, height, nrComponents;
-//    unsigned char *data = stbi_load(filepath.c_str(), &width, &height, &nrComponents, 0);
-//    if (data) {
-//        GLenum format;
-//        if (nrComponents == 1)
-//            format = GL_RED;
-//        else if (nrComponents == 3)
-//            format = GL_RGB;
-//        else if (nrComponents == 4)
-//            format = GL_RGBA;
-//
-//        glBindTexture(GL_TEXTURE_2D, textureID);
-//        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-//        glGenerateMipmap(GL_TEXTURE_2D);
-//
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//
-//        stbi_image_free(data);
-//    } else {
-//        std::cout << "Texture failed to load at path: " << filepath << std::endl;
-//        stbi_image_free(data);
-//    }
-//
-//    return textureID;
-//}
+void init_buffers(GLuint &skyboxVBO, GLuint &skyboxVAO) {
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skybox_vertices), &skybox_vertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) nullptr);
+}
 
-//void init_buffers(GLuint &vbo_, GLuint &cubeVAO, GLuint &lightVAO) {
-//    glGenVertexArrays(1, &cubeVAO);
-//    glGenBuffers(1, &vbo_);
-//
-//    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_), vertices_, GL_STATIC_DRAW);
-//
-//    glBindVertexArray(cubeVAO);
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) nullptr);
-//    glEnableVertexAttribArray(0);
-//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-//    glEnableVertexAttribArray(1);
-//    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
-//    glEnableVertexAttribArray(2);
-//    glBindVertexArray(0);
-//
-//    glGenVertexArrays(1, &lightVAO);
-//    glBindVertexArray(lightVAO);
-//
-//    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) nullptr);
-//    glEnableVertexAttribArray(0);
-//
-//    glEnableVertexAttribArray(0);
-//    glBindVertexArray(0);
-//}
-//
-//void init_textures(GLuint &texture1, GLuint &texture2) {
-//    // Texture 1
-//    glGenTextures(1, &texture1);
-//    glBindTexture(GL_TEXTURE_2D, texture1);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//    load_texture("assets/container.jpg");
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//
-//    // Texture 2
-//    glGenTextures(1, &texture2);
-//    glBindTexture(GL_TEXTURE_2D, texture2);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//    load_texture("assets/awesomeface.png");
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//}
+ImGuiIO init_ImGui(GLFWwindow *window) {
+    const char *glsl_version = "#version 330";
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    ImGui::StyleColorsDark();
+
+    return io;
+}
+
+GLuint load_cubemap(std::vector<std::string> maps) {
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrComponents;
+    for (GLuint i = 0; i < maps.size(); i++) {
+        GLubyte *data = stbi_load(maps[i].c_str(), &width, &height, &nrComponents, 0);
+        if (data) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        } else {
+            std::cout << "Cubemap texture failed to load at path: " << maps[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
 
 GLFWwindow *init_opengl() {
     glfwInit();
@@ -150,7 +111,7 @@ GLFWwindow *init_opengl() {
     GLFWwindow *window = glfwCreateWindow(
             WINDOW_WIDTH,
             WINDOW_HEIGHT,
-            "Lesson-10-model3D",
+            "Lesson-11-cubemap",
             nullptr,
             nullptr
     );
@@ -162,21 +123,16 @@ GLFWwindow *init_opengl() {
 
     glfwMakeContextCurrent(window);
 
-    // Set the required callback functions
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // Options
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
         throw std::runtime_error("Failed to initialize GLEW");
     }
-
-    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-//    stbi_set_flip_vertically_on_load(true);
 
     int frame_width, frame_height;
     glfwGetFramebufferSize(window, &frame_width, &frame_height);

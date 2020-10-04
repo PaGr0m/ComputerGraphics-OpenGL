@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-10-model3D CXX)
+project(Lesson-11-cubemap CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -15,10 +15,11 @@ find_package(stb CONFIG)
 find_package(assimp CONFIG)
 
 add_executable(
-        Lesson-10-model3D
+        Lesson-11-cubemap
 
         src/main.cpp
         src/initials.h
+        src/buffers.h
 
         src/utils/shader.cpp
         src/utils/camera.h
@@ -28,24 +29,26 @@ add_executable(
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
 
-        assets/IronMan/iron_man.vs
-        assets/IronMan/iron_man.fs
+        assets/skybox/skybox.vs
+        assets/skybox/skybox.fs
+        assets/nanosuit/nanosuit.vs
+        assets/nanosuit/nanosuit.fs
 )
 
 add_custom_command(
-        TARGET Lesson-10-model3D
+        TARGET Lesson-11-cubemap
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-10-model3D
+        Lesson-11-cubemap
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-10-model3D
+        Lesson-11-cubemap
         imgui::imgui
         GLEW::glew_s
         glfw::glfw

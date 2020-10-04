@@ -45,7 +45,7 @@ public:
         GLint normal_counter = 1;
         GLint height_counter = 1;
         for (GLint i = 0; i < textures_.size(); ++i) {
-            glActiveTexture(GL_TEXTURE0 + i);
+            glActiveTexture(GL_TEXTURE0 + i + 1);
 
             std::string number;
             std::string name = textures_[i].type;
@@ -54,7 +54,7 @@ public:
             else if (name == "texture_normal") number = std::to_string(normal_counter++);
             else if (name == "texture_height") number = std::to_string(height_counter++);
 
-            shader.set_uniform(name + number, i);
+            shader.set_uniform(name + number, i + 1);
             glBindTexture(GL_TEXTURE_2D, textures_[i].id);
         }
 
