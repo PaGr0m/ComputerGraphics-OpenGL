@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Lesson-11-cubemap CXX)
+project(Task-2-3Dobject CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -15,7 +15,7 @@ find_package(stb CONFIG)
 find_package(assimp CONFIG)
 
 add_executable(
-        Lesson-11-cubemap
+        Task-2-3Dobject
 
         src/main.cpp
         src/initials.h
@@ -36,19 +36,19 @@ add_executable(
 )
 
 add_custom_command(
-        TARGET Lesson-11-cubemap
+        TARGET Task-2-3Dobject
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Lesson-11-cubemap
+        Task-2-3Dobject
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Lesson-11-cubemap
+        Task-2-3Dobject
         imgui::imgui
         GLEW::glew_s
         glfw::glfw

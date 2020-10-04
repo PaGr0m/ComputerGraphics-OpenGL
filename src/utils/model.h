@@ -24,10 +24,9 @@ private:
     std::vector<Texture> textures_loaded_;
     std::vector<Mesh> meshes_;
     std::string directory_;
-    bool gamma_correction_;
 
 public:
-    explicit Model(const std::string &path, bool gamma = false) : gamma_correction_(gamma) {
+    explicit Model(const std::string &path) {
         load_model(path);
     }
 
@@ -165,7 +164,7 @@ private:
 
             if (!is_loaded) {
                 Texture texture;
-                texture.id = load_texture_from_file(path.C_Str(), directory_, gamma_correction_);
+                texture.id = load_texture_from_file(path.C_Str(), directory_);
                 texture.type = type_name;
                 texture.path = path.C_Str();
                 textures.push_back(texture);
@@ -176,7 +175,8 @@ private:
         return textures;
     }
 
-    static GLuint load_texture_from_file(const char *path, const std::string &dir, bool gamma) {
+public:
+    static GLuint load_texture_from_file(const char *path, const std::string &dir) {
         std::string filename = std::string(path);
         filename = dir + '/' + filename;
 
@@ -205,6 +205,33 @@ private:
             std::cout << "Texture failed to load at path: " << path << std::endl;
             stbi_image_free(data);
         }
+
+        return textureID;
+    }
+
+    static GLuint load_cubemap(const std::vector<std::string> &maps) {
+        GLuint textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+        int width, height, nrComponents;
+        for (GLuint i = 0; i < maps.size(); i++) {
+            GLubyte *data = stbi_load(maps[i].c_str(), &width, &height, &nrComponents, 0);
+            if (data) {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                             0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                stbi_image_free(data);
+            } else {
+                std::cout << "Cubemap texture failed to load at path: " << maps[i] << std::endl;
+                stbi_image_free(data);
+            }
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
         return textureID;
     }

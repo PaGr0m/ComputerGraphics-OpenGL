@@ -1,7 +1,7 @@
 #include "utils/shader.h"
 #include "utils/camera.h"
-#include "initials.h"
 #include "utils/model.h"
+#include "initials.h"
 
 
 int main() {
@@ -13,7 +13,7 @@ int main() {
     init_buffers(skybox_vbo, skybox_vao);
 
     // Cubemap
-    GLuint cubemap_texture = load_cubemap(cube_textures);
+    GLuint cubemap_texture = Model::load_cubemap(cube_textures);
 
     // Shader
     Shader nanosuit_shader("assets/nanosuit/nanosuit.vs", "assets/nanosuit/nanosuit.fs");
@@ -24,6 +24,7 @@ int main() {
 
     // Model
     Model nanosuit_model("assets/nanosuit/scene.gltf");
+//    Model nanosuit_model("assets/aircraft/piper_pa18.obj");
 
     // Uniforms
     static float coefficient_texture;
@@ -40,6 +41,7 @@ int main() {
         glViewport(0, 0, frame_width, frame_height);
         glClear(GLuint(GL_COLOR_BUFFER_BIT) | GLuint(GL_DEPTH_BUFFER_BIT));
 
+        // Mouse event
         if (!ImGui::IsAnyWindowFocused()) {
             auto[delta_x, delta_y] = ImGui::GetMouseDragDelta();
             ImGui::ResetMouseDragDelta();
@@ -52,6 +54,7 @@ int main() {
         // ImGui
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
+
         ImGui::NewFrame();
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Texture", &coefficient_texture, 0.0f, 1.0f);
@@ -75,7 +78,7 @@ int main() {
         nanosuit_shader.set_uniform("model", glm::value_ptr(model));
         nanosuit_shader.set_uniform("view", glm::value_ptr(view));
         nanosuit_shader.set_uniform("projection", glm::value_ptr(projection));
-        nanosuit_shader.set_uniform("cameraPos", camera.position());
+        nanosuit_shader.set_uniform("camera_pos", camera.position());
 
         nanosuit_model.draw(nanosuit_shader);
 
