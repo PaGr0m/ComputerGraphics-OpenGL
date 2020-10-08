@@ -30,6 +30,8 @@ int main() {
     static float coefficient_texture;
     static float coefficient_reflection;
     static float coefficient_refraction;
+    static float fresnel_alpha;
+    static float frag_color_mix = 0.5;
 
     while (!glfwWindowShouldClose(window)) {
         // Check and call events
@@ -60,12 +62,16 @@ int main() {
         ImGui::SliderFloat("Texture", &coefficient_texture, 0.0f, 1.0f);
         ImGui::SliderFloat("Reflection", &coefficient_reflection, 0.0f, 1.0f);
         ImGui::SliderFloat("Refraction", &coefficient_refraction, 0.0f, 1.0f);
+        ImGui::SliderFloat("Fresnel alpha", &fresnel_alpha, 0.0f, 2.0f);
+        ImGui::SliderFloat("Frag color mix", &frag_color_mix, 0.0f, 1.0f);
         ImGui::End();
 
         nanosuit_shader.use();
         nanosuit_shader.set_uniform("coefficient_texture", coefficient_texture);
         nanosuit_shader.set_uniform("coefficient_reflection", coefficient_reflection);
         nanosuit_shader.set_uniform("coefficient_refraction", coefficient_refraction);
+        nanosuit_shader.set_uniform("fresnel_alpha", fresnel_alpha);
+        nanosuit_shader.set_uniform("frag_color_mix", frag_color_mix);
 
         // Init MVP
         auto model = glm::identity<glm::mat4>();

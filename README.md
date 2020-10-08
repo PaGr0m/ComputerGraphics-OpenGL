@@ -14,9 +14,14 @@
 1) Windows `build.bat` 
 2) Linux `build.sh`
 
-Далее запускаем `build/OpenGL-Fractal`
+Далее запускаем `build/Task-2-3Dobject`
 
 ## Примеры
+- *Without Fresnel coefficient*
+![](screenshots/nanosuit_2.gif)
+
+- *Without Fresnel coefficient*
 ![](screenshots/nanosuit.gif)
 
+- *Without Fresnel coefficient*
 ![](screenshots/aircraft.gif)
