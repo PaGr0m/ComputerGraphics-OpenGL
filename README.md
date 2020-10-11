@@ -17,7 +17,7 @@
 Далее запускаем `build/Task-2-3Dobject`
 
 ## Примеры
-- *Without Fresnel coefficient*
+- *With Fresnel coefficient*
 ![](screenshots/nanosuit_2.gif)
 
 - *Without Fresnel coefficient*
