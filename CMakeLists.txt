@@ -15,16 +15,22 @@ find_package(stb CONFIG)
 find_package(assimp CONFIG)
 
 add_executable(
-        Task-2-3Dobject
+        Task-3-3D-scene
 
         src/main.cpp
-        src/initials.h
-        src/buffers.h
+        src/settings.h
 
-        src/utils/shader.cpp
-        src/utils/camera.h
-        src/utils/model.h
         src/utils/mesh.h
+        src/utils/model.h
+        src/utils/opengl.h
+        src/utils/shader.cpp
+
+        src/elements/camera.h
+        src/elements/car.h
+        src/elements/controller.h
+        src/elements/skybox.h
+        src/elements/torus.h
+        src/elements/window.h
 
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
@@ -36,19 +42,19 @@ add_executable(
 )
 
 add_custom_command(
-        TARGET Task-2-3Dobject
+        TARGET Task-3-3D-scene
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Task-2-3Dobject
+        Task-3-3D-scene
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Task-2-3Dobject
+        Task-3-3D-scene
         imgui::imgui
         GLEW::glew_s
         glfw::glfw
@@ -56,4 +62,11 @@ target_link_libraries(
         glm::glm
         stb::stb
         assimp::assimp
+)
+
+install(
+        DIRECTORY
+        ${PROJECT_SOURCE_DIR}/assets
+
+        DESTINATION ${PROJECT_BINARY_DIR}
 )

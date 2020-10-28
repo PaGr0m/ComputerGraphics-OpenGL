@@ -6,8 +6,10 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "shader.h"
+#include "../settings.h"
 
 
 struct Vertex {
@@ -40,22 +42,15 @@ public:
     }
 
     void draw(Shader &shader) {
-        GLint diffuse_counter = 1;
-        GLint specular_counter = 1;
-        GLint normal_counter = 1;
-        GLint height_counter = 1;
+        GLint counter = 1;
         for (GLint i = 0; i < textures_.size(); ++i) {
-            glActiveTexture(GL_TEXTURE0 + i + 1);
+            glActiveTexture(Settings::TEXTURE_MODEL + i);
 
-            std::string number;
-            std::string name = textures_[i].type;
-            if (name == "texture_diffuse") number = std::to_string(diffuse_counter++);
-            else if (name == "texture_specular") number = std::to_string(specular_counter++);
-            else if (name == "texture_normal") number = std::to_string(normal_counter++);
-            else if (name == "texture_height") number = std::to_string(height_counter++);
+            // TODO:
+//            std::cout << textures_[i].id << std::endl;
 
-            shader.set_uniform(name + number, i + 1);
-            glBindTexture(GL_TEXTURE_2D, textures_[i].id);
+            glBindTexture(GL_TEXTURE_2D, textures_[i].id - 1);
+            shader.set_uniform("u_texture_" + std::to_string(counter), i + 1);
         }
 
         glBindVertexArray(vao_);

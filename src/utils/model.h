@@ -31,7 +31,9 @@ public:
     }
 
     void draw(Shader &shader) {
-        for (auto &mesh : meshes_) mesh.draw(shader);
+        for (auto &mesh : meshes_) {
+            mesh.draw(shader);
+        }
     }
 
 private:
@@ -87,7 +89,7 @@ private:
                 vertex.normal = vector;
             }
 
-            // Texture coordinates
+            // textures coordinates
             if (mesh->mTextureCoords[0]) {
                 glm::vec2 vec;
                 vec.x = mesh->mTextureCoords[0][i].x;
@@ -125,29 +127,30 @@ private:
                                                                    "texture_diffuse");
         textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
 
-        // 2. Specular maps
-        std::vector<Texture> specular_maps = load_material_textures(material,
-                                                                    aiTextureType_SPECULAR,
-                                                                    "texture_specular");
-        textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
-
-        // 3. Normal maps
-        std::vector<Texture> normal_maps = load_material_textures(material,
-                                                                  aiTextureType_HEIGHT,
-                                                                  "texture_normal");
-        textures.insert(textures.end(), normal_maps.begin(), normal_maps.end());
-
-        // 4. Height maps
-        std::vector<Texture> height_maps = load_material_textures(material,
-                                                                  aiTextureType_AMBIENT,
-                                                                  "texture_height");
-        textures.insert(textures.end(), height_maps.begin(), height_maps.end());
+//        // 2. Specular maps
+//        std::vector<Texture> specular_maps = load_material_textures(material,
+//                                                                    aiTextureType_SPECULAR,
+//                                                                    "texture_specular");
+//        textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
+//
+//        // 3. Normal maps
+//        std::vector<Texture> normal_maps = load_material_textures(material,
+//                                                                  aiTextureType_HEIGHT,
+//                                                                  "texture_normal");
+//        textures.insert(textures.end(), normal_maps.begin(), normal_maps.end());
+//
+//        // 4. Height maps
+//        std::vector<Texture> height_maps = load_material_textures(material,
+//                                                                  aiTextureType_AMBIENT,
+//                                                                  "texture_height");
+//        textures.insert(textures.end(), height_maps.begin(), height_maps.end());
 
         return Mesh(vertices, indices, textures);
     }
 
-    std::vector<Texture>
-    load_material_textures(aiMaterial *material, aiTextureType texture_type, const std::string &type_name) {
+    std::vector<Texture> load_material_textures(aiMaterial *material,
+                                                aiTextureType texture_type,
+                                                const std::string &type_name) {
         std::vector<Texture> textures;
         for (GLuint i = 0; i < material->GetTextureCount(texture_type); ++i) {
             aiString path;
@@ -199,39 +202,11 @@ public:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            stbi_image_free(data);
         } else {
-            std::cout << "Texture failed to load at path: " << path << std::endl;
-            stbi_image_free(data);
+            std::cout << "textures failed to load at path: " << path << std::endl;
         }
 
-        return textureID;
-    }
-
-    static GLuint load_cubemap(const std::vector<std::string> &maps) {
-        GLuint textureID;
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-        int width, height, nrComponents;
-        for (GLuint i = 0; i < maps.size(); i++) {
-            GLubyte *data = stbi_load(maps[i].c_str(), &width, &height, &nrComponents, 0);
-            if (data) {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                             0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-                stbi_image_free(data);
-            } else {
-                std::cout << "Cubemap texture failed to load at path: " << maps[i] << std::endl;
-                stbi_image_free(data);
-            }
-        }
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        stbi_image_free(data);
 
         return textureID;
     }
