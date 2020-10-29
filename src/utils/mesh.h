@@ -42,15 +42,10 @@ public:
     }
 
     void draw(Shader &shader) {
-        GLint counter = 1;
         for (GLint i = 0; i < textures_.size(); ++i) {
             glActiveTexture(Settings::TEXTURE_MODEL + i);
-
-            // TODO:
-//            std::cout << textures_[i].id << std::endl;
-
             glBindTexture(GL_TEXTURE_2D, textures_[i].id - 1);
-            shader.set_uniform("u_texture_" + std::to_string(counter), i + 1);
+            shader.set_uniform("u_texture_" + std::to_string(i + 1), 0);
         }
 
         glBindVertexArray(vao_);

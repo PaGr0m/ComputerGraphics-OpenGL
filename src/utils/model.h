@@ -167,7 +167,7 @@ private:
 
             if (!is_loaded) {
                 Texture texture;
-                texture.id = load_texture_from_file(path.C_Str(), directory_);
+                texture.id = load_texture_from_file(std::string(directory_ + "/" + path.C_Str()));
                 texture.type = type_name;
                 texture.path = path.C_Str();
                 textures.push_back(texture);
@@ -178,11 +178,7 @@ private:
         return textures;
     }
 
-public:
-    static GLuint load_texture_from_file(const char *path, const std::string &dir) {
-        std::string filename = std::string(path);
-        filename = dir + '/' + filename;
-
+    static GLuint load_texture_from_file(const std::string &filename) {
         GLuint textureID;
         glGenTextures(1, &textureID);
 
@@ -203,7 +199,7 @@ public:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         } else {
-            std::cout << "textures failed to load at path: " << path << std::endl;
+            std::cout << "textures failed to load at path: " << filename << std::endl;
         }
 
         stbi_image_free(data);

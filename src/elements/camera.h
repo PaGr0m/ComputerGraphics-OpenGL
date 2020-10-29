@@ -13,13 +13,13 @@
 
 class Camera {
 public:
-    // TODO: private
-    glm::vec3 position_{};
+    glm::vec3 position_;
     glm::vec3 eye_{};
     glm::vec3 normal_{};
 
     float angle_ = 90.0f;
 
+public:
     explicit Camera(glm::vec3 position) : position_(position) {}
 
     [[nodiscard]]
@@ -35,5 +35,15 @@ public:
     [[nodiscard]]
     glm::vec3 position() const {
         return position_;
+    }
+
+    [[nodiscard]]
+    glm::vec3 normal() const {
+        return normal_;
+    }
+
+    [[nodiscard]]
+    float angle() const {
+        return angle_;
     }
 };

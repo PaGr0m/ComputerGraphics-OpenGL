@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <utility>
 
+#include <glm/gtx/rotate_vector.hpp>
 #include "../utils/shader.h"
 #include "controller.h"
 #include "skybox.h"
@@ -35,21 +36,39 @@ public:
 
 
             // Init MVP
-            auto model = glm::identity<glm::mat4>();
-            model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
+            Camera camera = controller_.camera();
 
-            auto scale = 0.2f;
+            auto model = glm::identity<glm::mat4>();
+//            model = glm::translate(model, camera.position());
+//            model = glm::rotate(model, camera.angle(), glm::vec3(0.0f, 1.0f, 0.0f));
+
+            model = glm::translate(camera.position());
+//            model *= glm::orientation(camera.normal(), glm::vec3(1, 0, 0));
+            model *= glm::orientation(camera.normal(), glm::vec3(0, 1, 0));
+            model *= glm::orientation(camera.normal(), glm::vec3(0, 0, 1));
+
+//            model *=                     glm::orientation(camera.normal(), glm::vec3(1, 0, 0));
+
+//            model = glm::rotate(model, camera.angle(),
+//                                glm::orientation(camera.normal_, glm::vec3(0.0f,1.0f,0.0f)));
+//            model = glm::rotate(model, camera.angle(), camera.position());
+
+            auto scale = 0.05f;
+//            auto scale = 0.005f;
             model = glm::scale(model, glm::vec3(scale, scale, scale));
 
-            glm::mat4 view = controller_.camera().view();
-            glm::mat4 projection = glm::perspective(glm::radians(45.0f), Settings::RATIO, 0.1f, 100.0f);
+
+            glm::mat4 view = camera.view();
+            glm::mat4 projection = glm::perspective(
+                    glm::radians(45.0f),
+                    Settings::RATIO,
+                    Settings::Z_NEAR,
+                    Settings::Z_FAR
+            );
 
 
             // Render elements
             render_elements(model, view, projection);
-
-
-//            view = controller_.camera().view();
         }
     }
 

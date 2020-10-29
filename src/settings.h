@@ -16,5 +16,7 @@ struct Settings {
     // Window
     const static GLuint WINDOW_WIDTH = 800;
     const static GLuint WINDOW_HEIGHT = 600;
-    constexpr const static GLfloat RATIO = GLfloat(WINDOW_WIDTH) / GLfloat(WINDOW_HEIGHT);
+    constexpr static GLfloat RATIO = GLfloat(WINDOW_WIDTH) / GLfloat(WINDOW_HEIGHT);
+    constexpr static GLfloat Z_NEAR = 0.1f;
+    constexpr static GLfloat Z_FAR = 100.0f;
 };
