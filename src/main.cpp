@@ -2,30 +2,31 @@
 #include "utils/model.h"
 
 #include "elements/torus.h"
-#include "elements/car.h"
+#include "elements/object.h"
 #include "elements/controller.h"
 #include "elements/window.h"
 #include "utils/opengl.h"
 
 
 int main() {
-    // Windows
-    OpenGl open_gl = OpenGl("Task-3-3D-scene");
+    // Window
+    auto open_gl = OpenGl(Settings::WINDOW_NAME);
 
     // Shaders
-    Shader torus_shader = Shader("assets/torus/torus.vs", "assets/torus/torus.fs");
-    Shader skybox_shader = Shader("assets/skybox/skybox.vs", "assets/skybox/skybox.fs");
-    Shader car_shader = Shader("assets/car/car.vs", "assets/car/car.fs");
+    auto torus_shader = Shader(Settings::TORUS_SHADER_VERTEX, Settings::TORUS_SHADER_FRAGMENT);
+    auto cubemap_shader = Shader(Settings::CUBEMAP_SHADER_VERTEX, Settings::CUBEMAP_SHADER_FRAGMENT);
+    auto object_shader = Shader(Settings::OBJECT_SHADER_VERTEX, Settings::OBJECT_SHADER_FRAGMENT);
+    auto light_shader = Shader(Settings::LIGHT_SHADER_VERTEX, Settings::LIGHT_SHADER_FRAGMENT);
 
     // Elements
-    Skybox skybox = Skybox(skybox_shader);
-    Torus torus = Torus(torus_shader);
-    Car car = Car(car_shader);
-
-    Controller controller = Controller(torus);
+    auto cubemap = Cubemap(cubemap_shader, Settings::CUBEMAP_TEXTURES);
+    auto object = Object(object_shader, Settings::PATH_TO_OBJECT);
+    auto torus = Torus(torus_shader);
+    auto light = Light(light_shader);
+    auto controller = Controller(torus);
 
     // Render
-    Window window = Window(skybox, torus, car, controller, open_gl.window());
+    auto window = Window(cubemap, torus, object, controller, light, open_gl.window());
     window.render();
 
     return 0;

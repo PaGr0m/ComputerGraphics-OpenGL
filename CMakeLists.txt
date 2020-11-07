@@ -28,19 +28,15 @@ add_executable(
         src/utils/shader.cpp
 
         src/elements/camera.h
-        src/elements/car.h
         src/elements/controller.h
-        src/elements/skybox.h
+        src/elements/light.h
+        src/elements/object.h
+        src/elements/cubemap.h
         src/elements/torus.h
         src/elements/window.h
 
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
-
-        assets/skybox/skybox.vs
-        assets/skybox/skybox.fs
-        assets/nanosuit/nanosuit.vs
-        assets/nanosuit/nanosuit.fs
 )
 
 add_custom_command(

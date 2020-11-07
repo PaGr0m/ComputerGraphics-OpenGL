@@ -43,8 +43,8 @@ public:
 
     void draw(Shader &shader) {
         for (GLint i = 0; i < textures_.size(); ++i) {
-            int texture_slot = int(Settings::TEXTURE_MODEL) - GL_TEXTURE0 + i;
-            glActiveTexture(Settings::TEXTURE_MODEL + i);
+            int texture_slot = int(Settings::GL_TEXTURE_MODEL) - GL_TEXTURE0 + i;
+            glActiveTexture(Settings::GL_TEXTURE_MODEL + i);
             glBindTexture(GL_TEXTURE_2D, textures_[i].id);
             shader.set_uniform("u_texture_" + std::to_string(i + 1), texture_slot);
         }

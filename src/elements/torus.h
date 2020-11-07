@@ -11,8 +11,10 @@ struct TorusCoordinateTable {
     POSITION position;
     NORMAL normal;
 
+private:
     glm::ivec2 vec_size_{};
 
+public:
     TorusCoordinateTable() = default;
 
     explicit TorusCoordinateTable(glm::ivec2 vec_size) : vec_size_(vec_size) {
@@ -30,17 +32,10 @@ private:
     }
 };
 
-class Torus {
 
+class Torus {
 // Const values
 private:
-    // Landscape textures
-    const std::string texture_lvl_1_ = "assets/torus/textures/soil.jpg";
-    const std::string texture_lvl_2_ = "assets/torus/textures/plaster_wall.jpg";
-    const std::string texture_lvl_3_ = "assets/torus/textures/grass_stone.jpg";
-    const std::string texture_lvl_4_ = "assets/torus/textures/grass_flower.jpg";
-    const std::string texture_height_map_ = "assets/torus/textures/height_map.jpg";
-
     // Torus settings
     const float radius_major_ = 5.0f;
     const float radius_minor_ = 1.0f;
@@ -96,6 +91,7 @@ public:
         shader_.set_uniform("u_texture4", 4);
         shader_.set_uniform("u_texture_depth", 5);
 
+        // TODO: rework
 //        shader_.set_uniform("u_height_min", height_min_);
         shader_.set_uniform("u_height_min", 1.0f);
         shader_.set_uniform("u_height_max", height_max_);
@@ -124,8 +120,8 @@ private:
     }
 
     glm::vec3 evaluate_point(Point point) {
-        auto phi = float((M_PI * 2.0 * point.x) / (plane.x ));
-        auto psi = float(M_PI * (2.0 * point.y / (plane.y )));
+        auto phi = float((M_PI * 2.0 * point.x) / (plane.x));
+        auto psi = float(M_PI * (2.0 * point.y / (plane.y)));
         float height = evaluate_height(point) * 0.2f;
 
         return glm::vec3(
@@ -180,24 +176,24 @@ private:
         return textureID;
     }
 
-    void load_textures() {
-        glActiveTexture(Settings::TEXTURE_TORUS_1);
-        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(texture_lvl_1_));
+    static void load_textures() {
+        glActiveTexture(Settings::GL_TEXTURE_TORUS_1);
+        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(Settings::LANDSCAPE_TEXTURE_LEVEL_1));
 
-        glActiveTexture(Settings::TEXTURE_TORUS_2);
-        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(texture_lvl_2_));
+        glActiveTexture(Settings::GL_TEXTURE_TORUS_2);
+        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(Settings::LANDSCAPE_TEXTURE_LEVEL_2));
 
-        glActiveTexture(Settings::TEXTURE_TORUS_3);
-        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(texture_lvl_3_));
+        glActiveTexture(Settings::GL_TEXTURE_TORUS_3);
+        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(Settings::LANDSCAPE_TEXTURE_LEVEL_3));
 
-        glActiveTexture(Settings::TEXTURE_TORUS_4);
-        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(texture_lvl_4_));
+        glActiveTexture(Settings::GL_TEXTURE_TORUS_4);
+        glBindTexture(GL_TEXTURE_2D, load_texture_from_file(Settings::LANDSCAPE_TEXTURE_LEVEL_4));
 
         glActiveTexture(GL_TEXTURE0);
     }
 
     void load_height_map() {
-        std::string filename = std::string(texture_height_map_);
+        std::string filename = std::string(Settings::LANDSCAPE_TEXTURE_HEIGHT_MAP);
 
         height_map_ = stbi_load(filename.c_str(),
                                 &height_map_width_,

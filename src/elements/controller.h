@@ -19,8 +19,6 @@ inline void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 }
 
 class Controller {
-
-
 private:
     using Table = std::vector<std::vector<glm::vec3>>;
 
@@ -96,7 +94,6 @@ private:
                 (offset.x - offset.y) * table[p4.x][p4.y]
         );
     }
-
 
     [[nodiscard]]
     glm::ivec2 normalize(const glm::ivec2 &vec) const {

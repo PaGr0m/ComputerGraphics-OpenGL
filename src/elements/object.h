@@ -5,17 +5,13 @@
 #include "../utils/shader.h"
 #include "../utils/model.h"
 
-class Car {
-private:
-    const std::string path_to_model = "assets/aircraft/piper_pa18.obj";
-//    const std::string path_to_model = "assets/test/volley_ball_OBJ/volley_ball_OBJ.obj";
-
+class Object {
 private:
     Shader shader_;
     Model model_;
 
 public:
-    explicit Car(const Shader &shader)
+    explicit Object(const Shader &shader, const std::string &path_to_model)
             : shader_(shader),
               model_(Model(path_to_model)) {}
 
