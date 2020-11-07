@@ -11,7 +11,9 @@ struct Settings {
     const static unsigned TEXTURE_TORUS_3 = GL_TEXTURE3;
     const static unsigned TEXTURE_TORUS_4 = GL_TEXTURE4;
 
-    const static unsigned TEXTURE_MODEL = GL_TEXTURE5;
+    const static unsigned TEXTURE_DEPTH = GL_TEXTURE5;
+
+    const static unsigned TEXTURE_MODEL = GL_TEXTURE6;
 
     // Window
     const static GLuint WINDOW_WIDTH = 800;

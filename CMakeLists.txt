@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
-project(Task-2-3Dobject CXX)
+set(PROJECT_NAME "Task-3-3D-scene")
+
+project(${PROJECT_NAME} CXX)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -15,7 +17,7 @@ find_package(stb CONFIG)
 find_package(assimp CONFIG)
 
 add_executable(
-        Task-3-3D-scene
+        ${PROJECT_NAME}
 
         src/main.cpp
         src/settings.h
@@ -42,19 +44,19 @@ add_executable(
 )
 
 add_custom_command(
-        TARGET Task-3-3D-scene
+        TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/assets
 )
 
 target_compile_definitions(
-        Task-3-3D-scene
+        ${PROJECT_NAME}
         PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 target_link_libraries(
-        Task-3-3D-scene
+        ${PROJECT_NAME}
         imgui::imgui
         GLEW::glew_s
         glfw::glfw

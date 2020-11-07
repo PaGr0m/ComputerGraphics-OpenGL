@@ -24,7 +24,7 @@ public:
 
     [[nodiscard]]
     glm::vec2 direction() const {
-        return glm::vec2(cos(angle_), sin(angle_));
+        return glm::vec2(cos(glm::radians(angle_)), sin(glm::radians(angle_)));
     }
 
     [[nodiscard]]
