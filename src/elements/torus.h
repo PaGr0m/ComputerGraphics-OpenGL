@@ -78,18 +78,29 @@ public:
         height_max_ = *std::max_element(heights.begin(), heights.end());
     }
 
-    void render(glm::mat4 &view, glm::mat4 &projection, glm::mat4 &light_view, glm::mat4 &light_projection) {
+    void render(
+            glm::mat4 &view, glm::mat4 &projection,
+            glm::mat4 &light_view, glm::mat4 &light_projection,
+            glm::mat4 &spotlight_view, glm::mat4 &spotlight_projection
+    ) {
         shader_.use();
         shader_.set_uniform("u_view", glm::value_ptr(view));
         shader_.set_uniform("u_projection", glm::value_ptr(projection));
+
         shader_.set_uniform("u_light_view", glm::value_ptr(light_view));
         shader_.set_uniform("u_light_projection", glm::value_ptr(light_projection));
+
+        shader_.set_uniform("u_spotlight_view", glm::value_ptr(spotlight_view));
+        shader_.set_uniform("u_spotlight_projection", glm::value_ptr(spotlight_projection));
+        shader_.set_uniform("u_spotlight_cone", glm::cos(glm::radians(12.5f))); // TODO: remove
+
 
         shader_.set_uniform("u_texture1", 1);
         shader_.set_uniform("u_texture2", 2);
         shader_.set_uniform("u_texture3", 3);
         shader_.set_uniform("u_texture4", 4);
         shader_.set_uniform("u_texture_depth", 5);
+
 
         // TODO: rework
 //        shader_.set_uniform("u_height_min", height_min_);

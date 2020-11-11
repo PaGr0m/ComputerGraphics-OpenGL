@@ -5,17 +5,17 @@
 
 struct Settings {
     // Shaders
-    inline static const std::string TORUS_SHADER_VERTEX = "assets/shaders/torus.vs";
-    inline static const std::string TORUS_SHADER_FRAGMENT = "assets/shaders/torus.fs";
+    inline static const std::string TORUS_SHADER_VERTEX = "assets/shaders/torus_vertex.glsl";
+    inline static const std::string TORUS_SHADER_FRAGMENT = "assets/shaders/torus_fragment.glsl";
 
-    inline static const std::string CUBEMAP_SHADER_VERTEX = "assets/shaders/cubemap.vs";
-    inline static const std::string CUBEMAP_SHADER_FRAGMENT = "assets/shaders/cubemap.fs";
+    inline static const std::string CUBEMAP_SHADER_VERTEX = "assets/shaders/cubemap_vertex.glsl";
+    inline static const std::string CUBEMAP_SHADER_FRAGMENT = "assets/shaders/cubemap_fragment.glsl";
 
-    inline static const std::string OBJECT_SHADER_VERTEX = "assets/shaders/object.vs";
-    inline static const std::string OBJECT_SHADER_FRAGMENT = "assets/shaders/object.fs";
+    inline static const std::string OBJECT_SHADER_VERTEX = "assets/shaders/object_vertex.glsl";
+    inline static const std::string OBJECT_SHADER_FRAGMENT = "assets/shaders/object_fragment.glsl";
 
-    inline static const std::string LIGHT_SHADER_VERTEX = "assets/shaders/light.vs";
-    inline static const std::string LIGHT_SHADER_FRAGMENT = "assets/shaders/light.fs";
+    inline static const std::string LIGHT_SHADER_VERTEX = "assets/shaders/light_vertex.glsl";
+    inline static const std::string LIGHT_SHADER_FRAGMENT = "assets/shaders/light_fragment.glsl";
 
     // Textures
     static const unsigned GL_TEXTURE_CUBEMAP = GL_TEXTURE0;
@@ -49,7 +49,7 @@ struct Settings {
 
     // Paths
 //    inline static const std::string PATH_TO_OBJECT = "assets/objects/aircraft/piper_pa18.obj";
-    inline static const std::string PATH_TO_OBJECT = "assets/objects/OBJ/Soccer_Ball.obj";
+    inline static const std::string PATH_TO_OBJECT = "assets/objects/ball/Soccer_Ball.obj";
 
     inline static const std::string LANDSCAPE_TEXTURE_LEVEL_1 = "assets/objects/torus/textures/soil.jpg";
     inline static const std::string LANDSCAPE_TEXTURE_LEVEL_2 = "assets/objects/torus/textures/plaster_wall.jpg";

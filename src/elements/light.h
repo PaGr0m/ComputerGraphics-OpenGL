@@ -15,8 +15,16 @@ private:
     GLuint depth_map_FBO{};
     GLuint depth_map{};
 
-    glm::mat4 light_projection{};
-    glm::mat4 light_view{};
+    glm::mat4 light_view = glm::lookAt(
+            Settings::LIGHT_POSITION,
+            glm::vec3(0.0f),
+            glm::vec3(0.0, 1.0, 0.0)
+    );
+    glm::mat4 light_projection = glm::ortho(
+            -6.0f, 6.0f,
+            -6.0f, 6.0f,
+            Settings::LIGHT_Z_NEAR, Settings::LIGHT_Z_FAR
+    );
 
 public:
     explicit Light(const Shader &shader) : shader_(shader) {
@@ -24,18 +32,6 @@ public:
     }
 
     void render(glm::mat4 &model) {
-        light_projection = glm::ortho(
-                -6.0f, 6.0f,
-                -6.0f, 6.0f,
-                Settings::LIGHT_Z_NEAR, Settings::LIGHT_Z_FAR
-        );
-
-        light_view = glm::lookAt(
-                Settings::LIGHT_POSITION,
-                glm::vec3(0.0f),
-                glm::vec3(0.0, 1.0, 0.0)
-        );
-
         glBindFramebuffer(GL_FRAMEBUFFER, depth_map_FBO);
         glViewport(0, 0, Settings::SHADOW_WIDTH, Settings::SHADOW_HEIGHT);
         glClear(GLuint(GL_DEPTH_BUFFER_BIT));

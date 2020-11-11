@@ -15,17 +15,19 @@
 class Window {
     Cubemap cubemap_;
     Torus torus_;
-    Object model_;
+    Object object_;
     Controller controller_;
     Light light_;
 
     GLFWwindow *window_;
 
+    glm::mat4 default_matrix = glm::identity<glm::mat4>();
+
 public:
-    Window(const Cubemap &cubemap, Torus torus, Object car, Controller controller, Light light, GLFWwindow *window)
+    Window(const Cubemap &cubemap, Torus torus, Object object, Controller controller, Light light, GLFWwindow *window)
             : cubemap_(cubemap),
               torus_(std::move(torus)),
-              model_(std::move(car)),
+              object_(std::move(object)),
               controller_(std::move(controller)),
               light_(std::move(light)) {
         window_ = window;
@@ -45,7 +47,12 @@ public:
             light_.render(model);
             auto light_view = light_.view();
             auto light_projection = light_.projection();
-            render_elements(model, light_view, light_projection, light_view, light_projection);
+            render_elements(
+                    model,
+                    light_view, light_projection,
+                    default_matrix, default_matrix,
+                    default_matrix, default_matrix
+            );
             light_.activate();
 
             init_display();
@@ -59,8 +66,25 @@ public:
                     Settings::Z_FAR
             );
 
+            // Spotlight
+            glm::mat4 spotlight_view = glm::lookAt(
+                    controller_.get_position(controller_.plane()),
+//                    controller_.get_position(-camera.direction()),
+                    glm::vec3(0.0, 1.0, 0.0),
+                    glm::vec3(0.0, 1.0, 0.0)
+            );
+            glm::mat4 spotlight_projection = glm::ortho(
+                    -1.0f, 1.0f,
+                    -1.0f, 1.0f,
+                    0.1f, 0.2f
+            );
+
             // Render elements
-            render_elements(model, view, projection, light_view, light_projection);
+            render_elements(
+                    model, view, projection,
+                    light_view, light_projection,
+                    spotlight_view, spotlight_projection
+            );
 
             // Swap
             glfwSwapBuffers(window_);
@@ -68,11 +92,14 @@ public:
     }
 
 private:
-    void render_elements(glm::mat4 &model, glm::mat4 &view, glm::mat4 &projection,
-                         glm::mat4 &light_view, glm::mat4 &light_projection) {
-        torus_.render(view, projection, light_view, light_projection);
+    void render_elements(
+            glm::mat4 &model, glm::mat4 &view, glm::mat4 &projection,
+            glm::mat4 &light_view, glm::mat4 &light_projection,
+            glm::mat4 &spotlight_view, glm::mat4 &spotlight_projection
+    ) {
+        torus_.render(view, projection, light_view, light_projection, spotlight_view, spotlight_projection);
         cubemap_.render(view, projection);
-        model_.render(model, view, projection);
+        object_.render(model, view, projection);
     }
 
     glm::mat4 create_aircraft_model_matrix(Camera camera) {
