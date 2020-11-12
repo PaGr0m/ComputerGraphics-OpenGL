@@ -68,15 +68,15 @@ public:
 
             // Spotlight
             glm::mat4 spotlight_view = glm::lookAt(
+                    controller_.get_position(controller_.plane() - camera.direction()),
                     controller_.get_position(controller_.plane()),
-//                    controller_.get_position(-camera.direction()),
-                    glm::vec3(0.0, 1.0, 0.0),
                     glm::vec3(0.0, 1.0, 0.0)
             );
-            glm::mat4 spotlight_projection = glm::ortho(
-                    -1.0f, 1.0f,
-                    -1.0f, 1.0f,
-                    0.1f, 0.2f
+            glm::mat4 spotlight_projection = glm::perspective(
+                    glm::radians(45.0f),
+                    Settings::RATIO,
+                    Settings::Z_NEAR,
+                    2.0f
             );
 
             // Render elements

@@ -43,18 +43,20 @@ float evaluate_light_coefficient(float diffuse) {
 }
 
 // Spotlight
-float evaluate_spotlight_coefficient(float diffuse) {
+float evaluate_spotlight_coefficient() {
     vec4 spotlight_position = u_spotlight_projection * u_spotlight_view * vec4(vs.position, 1.0);
+
     spotlight_position = spotlight_position / spotlight_position.w;
     spotlight_position = spotlight_position / 2 + 0.5f;
 
-    //    float theta = dot(light_dir, normalize(-vec3(0.1f, 0.1f, 0.1f)));
-    //    float spotlight = texture(u_texture_depth, spotlight_position.xy).x < spotlight_position.z
-    float spotlight = spotlight_position.x < spotlight_position.z
-                    ? 0.0f
-                    : 0.4f;
-//    float illumination_level = 0.15f;
-//    float spotlight = min(spotlight_coefficient, diffuse) + illumination_level;
+    float spotlight = 0.0f;
+    if (
+        spotlight_position.x > 0 && spotlight_position.x < 1 &&
+        spotlight_position.y > 0 && spotlight_position.y < 1 &&
+        spotlight_position.z > 0 && spotlight_position.z < 1
+    ) {
+        spotlight = 0.4f;
+    }
 
     return spotlight;
 }
@@ -64,15 +66,23 @@ void main() {
     float light_diffuse = max(dot(vs.normal, light_dir), 0.0);
 
     vec3 color;
-     color = texture(u_texture3, vs.texture_pos.xy).rgb;
-    if (abs(vs.texture_pos.z) > 1.1f) color = texture(u_texture1, vs.texture_pos.xy).rgb;
-//    else if (abs(vs.texture_pos.z) > 0.5f) color = texture(u_texture2, vs.texture_pos.xsy).rgb;
-//    else if (abs(vs.texture_pos.z) > 0.2f) color = texture(u_texture3, vs.texture_pos.xy).rgb;
-//    else color = texture(u_texture4, vs.texture_pos.xy).rgb;
+    float height = (vs.texture_pos.z - u_height_min) / (u_height_max - u_height_min);
+    if (height > 0.9f)
+        color = mix(
+            texture(u_texture2, vs.texture_pos.xy).rgb,
+            texture(u_texture3, vs.texture_pos.xy).rgb,
+            0.5f
+        );
+    else if (height > 0.6f)
+        color = mix(
+            texture(u_texture3, vs.texture_pos.xy).rgb,
+            texture(u_texture4, vs.texture_pos.xy).rgb,
+            0.25f
+        );
+    else color = texture(u_texture4, vs.texture_pos.xy).rgb;
 
     float light_coefficient = evaluate_light_coefficient(light_diffuse);
-    float spotlight_coefficient = evaluate_spotlight_coefficient(light_diffuse);
+    float spotlight = evaluate_spotlight_coefficient();
 
-    FragColor = vec4(color * light_coefficient + spotlight_coefficient, 1.0f);
-//    FragColor = vec4(color * light_coefficient, 1.0f);
+    FragColor = vec4(color * light_coefficient + spotlight, 1.0f);
 }

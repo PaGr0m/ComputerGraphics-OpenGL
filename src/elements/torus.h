@@ -92,8 +92,7 @@ public:
 
         shader_.set_uniform("u_spotlight_view", glm::value_ptr(spotlight_view));
         shader_.set_uniform("u_spotlight_projection", glm::value_ptr(spotlight_projection));
-        shader_.set_uniform("u_spotlight_cone", glm::cos(glm::radians(12.5f))); // TODO: remove
-
+        shader_.set_uniform("u_spotlight_cone", glm::cos(glm::radians(12.5f)));
 
         shader_.set_uniform("u_texture1", 1);
         shader_.set_uniform("u_texture2", 2);
@@ -101,9 +100,6 @@ public:
         shader_.set_uniform("u_texture4", 4);
         shader_.set_uniform("u_texture_depth", 5);
 
-
-        // TODO: rework
-//        shader_.set_uniform("u_height_min", height_min_);
         shader_.set_uniform("u_height_min", 1.0f);
         shader_.set_uniform("u_height_max", height_max_);
         shader_.set_uniform("u_height_shift", (std::abs(height_max_) + std::abs(height_min_)) / 4);
@@ -155,7 +151,15 @@ private:
     }
 
     glm::vec3 evaluate_texture_coordinate(Point point) {
-        return glm::vec3(evaluate_point(point));
+        auto phi = float((M_PI * 2.0 * point.x) / (plane.x));
+        auto psi = float(M_PI * (2.0 * point.y / (plane.y)));
+        float height = evaluate_height(point) * 0.2f;
+
+        return glm::vec3(
+                (radius_major_ + (radius_minor_ + height) * cos(psi)) * cos(phi),
+                (radius_major_ + (radius_minor_ + height) * cos(psi)) * sin(phi),
+                (radius_minor_ + height)
+        );
     }
 
     static GLuint load_texture_from_file(const std::string &filename) {
