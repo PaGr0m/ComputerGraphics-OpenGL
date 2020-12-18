@@ -30,13 +30,9 @@ public:
 
 private:
     void check_compile_error() const;
-
     void check_linking_error() const;
-
     void compile(const std::string &vertex_code, const std::string &fragment_code);
-
     void compile(const std::string &vertex_code, const std::string &geometry_code, const std::string &fragment_code);
-
     void link();
 
 private:

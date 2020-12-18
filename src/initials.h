@@ -38,7 +38,7 @@ void init_buffers(GLuint &skyboxVBO, GLuint &skyboxVAO) {
 }
 
 ImGuiIO init_ImGui(GLFWwindow *window) {
-    const char *glsl_version = "#version 330";
+    const char *glsl_version = "#version 430";
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -62,7 +62,7 @@ GLFWwindow *init_opengl() {
     GLFWwindow *window = glfwCreateWindow(
             WINDOW_WIDTH,
             WINDOW_HEIGHT,
-            "Task-2-3Dobject",
+            "Task-4-metaballs",
             nullptr,
             nullptr
     );

@@ -9,14 +9,15 @@ uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_projection;
 
-const float CUBE_SIZE = 0.03f;
+const float CUBE_SIZE = 0.05f;
 
 out vec3 shader_normal;
 
-float func(vec3 point) {
+float vertex_function(vec3 point) {
     vec3 metaball_center1 = vec3(0.0f, 0.0f, 0.0f);
     vec3 metaball_center2 = vec3(0.1f, -0.2f, 0.5f);
     vec3 metaball_center3 = vec3(-0.5f, 0.5f, -0.5f);
+
     vec3 delta1 = point - metaball_center1;
     vec3 delta2 = point - metaball_center2;
     vec3 delta3 = point - metaball_center3;
@@ -29,37 +30,38 @@ float func(vec3 point) {
 
 vec3 evaluate_normal(vec3 point) {
     return normalize(vec3(
-    func(point + vec3(CUBE_SIZE / 8, 0, 0)) - func(point - vec3(CUBE_SIZE / 8, 0, 0)),
-    func(point + vec3(0, CUBE_SIZE / 8, 0)) - func(point - vec3(0, CUBE_SIZE / 8, 0)),
-    func(point + vec3(0, 0, CUBE_SIZE / 8)) - func(point - vec3(0, 0, CUBE_SIZE / 8))
+        vertex_function(point + vec3(CUBE_SIZE / 8, 0, 0)) - vertex_function(point - vec3(CUBE_SIZE / 8, 0, 0)),
+        vertex_function(point + vec3(0, CUBE_SIZE / 8, 0)) - vertex_function(point - vec3(0, CUBE_SIZE / 8, 0)),
+        vertex_function(point + vec3(0, 0, CUBE_SIZE / 8)) - vertex_function(point - vec3(0, 0, CUBE_SIZE / 8))
     ));
 }
 
 vec3 lerp(vec3 point1, vec3 point2) {
-    return point1 + (point2 - point1) * abs(func(point1)) / (abs(func(point1)) + abs(func(point2)));
+    float coefficient = abs(vertex_function(point1)) / (abs(vertex_function(point1)) + abs(vertex_function(point2)));
+    return point1 + (point2 - point1) * coefficient;
 }
 
 void main() {
     vec3 cube[8] = {
-    gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE / 2, -CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
-    gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, -CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
-    gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, -CUBE_SIZE/ 2, CUBE_SIZE/ 2),
-    gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE/ 2, -CUBE_SIZE/ 2, CUBE_SIZE/ 2),
-    gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE/ 2, CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
-    gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
-    gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, CUBE_SIZE/ 2, CUBE_SIZE/ 2),
-    gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE/ 2, CUBE_SIZE/ 2, CUBE_SIZE/ 2)
+        gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE / 2, -CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
+        gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, -CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
+        gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, -CUBE_SIZE/ 2, CUBE_SIZE/ 2),
+        gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE/ 2, -CUBE_SIZE/ 2, CUBE_SIZE/ 2),
+        gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE/ 2, CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
+        gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, CUBE_SIZE/ 2, -CUBE_SIZE/ 2),
+        gl_in[0].gl_Position.xyz + vec3(CUBE_SIZE/ 2, CUBE_SIZE/ 2, CUBE_SIZE/ 2),
+        gl_in[0].gl_Position.xyz + vec3(-CUBE_SIZE/ 2, CUBE_SIZE/ 2, CUBE_SIZE/ 2)
     };
 
     int cubeBitMaskIndex = 0;
-    if (func(cube[0]) < 0) cubeBitMaskIndex |= 1;
-    if (func(cube[1]) < 0) cubeBitMaskIndex |= 2;
-    if (func(cube[2]) < 0) cubeBitMaskIndex |= 4;
-    if (func(cube[3]) < 0) cubeBitMaskIndex |= 8;
-    if (func(cube[4]) < 0) cubeBitMaskIndex |= 16;
-    if (func(cube[5]) < 0) cubeBitMaskIndex |= 32;
-    if (func(cube[6]) < 0) cubeBitMaskIndex |= 64;
-    if (func(cube[7]) < 0) cubeBitMaskIndex |= 128;
+    if (vertex_function(cube[0]) < 0) cubeBitMaskIndex |= 1;
+    if (vertex_function(cube[1]) < 0) cubeBitMaskIndex |= 2;
+    if (vertex_function(cube[2]) < 0) cubeBitMaskIndex |= 4;
+    if (vertex_function(cube[3]) < 0) cubeBitMaskIndex |= 8;
+    if (vertex_function(cube[4]) < 0) cubeBitMaskIndex |= 16;
+    if (vertex_function(cube[5]) < 0) cubeBitMaskIndex |= 32;
+    if (vertex_function(cube[6]) < 0) cubeBitMaskIndex |= 64;
+    if (vertex_function(cube[7]) < 0) cubeBitMaskIndex |= 128;
 
     vec3 vertexOnEdge[12];
     int edges = edge_table[cubeBitMaskIndex];
