@@ -33,16 +33,17 @@ GLuint load_cubemap(const std::vector<std::string> &maps) {
 }
 
 static std::vector<float> metaballs_vertices;
-static float edge_size = 0.03f;
 
 void init_metaballs(GLuint &skyboxVBO, GLuint &skyboxVAO) {
-    int TMP = 40;
-    for (int i = -TMP; i < TMP; i++) {
-        for (int j = -TMP; j < TMP; j++) {
-            for (int k = -TMP; k < TMP; k++) {
-                metaballs_vertices.push_back(float(i) * edge_size);
-                metaballs_vertices.push_back(float(j) * edge_size);
-                metaballs_vertices.push_back(float(k) * edge_size);
+    int grid_size = 40;
+    float grid_mini_cube_size = 0.05f;
+
+    for (int i = -grid_size; i < grid_size; i++) {
+        for (int j = -grid_size; j < grid_size; j++) {
+            for (int k = -grid_size; k < grid_size; k++) {
+                metaballs_vertices.push_back(float(i) * grid_mini_cube_size);
+                metaballs_vertices.push_back(float(j) * grid_mini_cube_size);
+                metaballs_vertices.push_back(float(k) * grid_mini_cube_size);
             }
         }
     }
@@ -51,7 +52,9 @@ void init_metaballs(GLuint &skyboxVBO, GLuint &skyboxVAO) {
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(metaballs_vertices[0]) * metaballs_vertices.size(), metaballs_vertices.data(),
+    glBufferData(GL_ARRAY_BUFFER,
+                 metaballs_vertices.size() * sizeof(metaballs_vertices[0]),
+                 metaballs_vertices.data(),
                  GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) nullptr);
@@ -93,7 +96,6 @@ int main() {
             "assets/skybox/shaders/vertex.glsl",
             "assets/skybox/shaders/fragment.glsl"
     );
-    skybox_shader.set_uniform("u_skybox", 0);
 
     Shader metaballs_shader(
             "assets/metaballs/shaders/vertex.glsl",
@@ -146,12 +148,11 @@ int main() {
         glDrawArrays(GL_POINTS, 0, metaballs_vertices.size() / 3);
         glBindVertexArray(0);
 
-        // Init MVP
-
         // Skybox
         glDepthFunc(GL_LEQUAL);
         skybox_shader.use();
         view = glm::mat4(glm::mat3(camera.view()));
+        skybox_shader.set_uniform("u_skybox", 0);
         skybox_shader.set_uniform("u_view", glm::value_ptr(view));
         skybox_shader.set_uniform("u_projection", glm::value_ptr(projection));
 

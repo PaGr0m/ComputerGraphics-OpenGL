@@ -1,15 +1,15 @@
 #version 430 core
 
-layout (location = 0) in vec3 in_pos;
+layout (location = 0) in vec3 in_position;
 
-out vec3 tex_coords;
+out vec3 shader_texture_position;
 
-uniform mat4 u_projection;
 uniform mat4 u_view;
+uniform mat4 u_projection;
 
 void main() {
-    tex_coords = in_pos;
-    vec4 pos = u_projection * u_view * vec4(in_pos, 1.0);
+    shader_texture_position = in_position;
+    vec4 pos = u_projection * u_view * vec4(in_position, 1.0);
 
     gl_Position = pos.xyww;
 }

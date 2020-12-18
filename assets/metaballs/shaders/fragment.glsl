@@ -18,11 +18,9 @@ void main() {
     vec3 reflection = reflect(u_camera_pos, shader_normal);
     vec3 refraction = refract(u_camera_pos, shader_normal, 1 / coefficient_refraction);
 
-    vec4 R = mix(
+    gl_FragColor = mix(
         vec4(texture(u_skybox, refraction).rgb, 1.0),
         vec4(texture(u_skybox, reflection).rgb, 1.0),
         0.2f
     );
-
-    gl_FragColor = R;
 }
