@@ -1,7 +1,77 @@
+#define STB_IMAGE_IMPLEMENTATION
+
+#include <stb_image.h>
 #include "utils/shader.h"
 #include "utils/camera.h"
-#include "utils/model.h"
 #include "initials.h"
+
+GLuint load_cubemap(const std::vector<std::string> &maps) {
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrComponents;
+    for (GLuint i = 0; i < maps.size(); i++) {
+        GLubyte *data = stbi_load(maps[i].c_str(), &width, &height, &nrComponents, 0);
+        if (data) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        } else {
+            std::cout << "Cubemap texture failed to load at path: " << maps[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
+
+static std::vector<float> metaballs_vertices;
+static float edge_size = 0.03f;
+
+void init_metaballs(GLuint &skyboxVBO, GLuint &skyboxVAO) {
+    int TMP = 40;
+    for (int i = -TMP; i < TMP; i++) {
+        for (int j = -TMP; j < TMP; j++) {
+            for (int k = -TMP; k < TMP; k++) {
+                metaballs_vertices.push_back(float(i) * edge_size);
+                metaballs_vertices.push_back(float(j) * edge_size);
+                metaballs_vertices.push_back(float(k) * edge_size);
+            }
+        }
+    }
+
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(metaballs_vertices[0]) * metaballs_vertices.size(), metaballs_vertices.data(),
+                 GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) nullptr);
+}
+
+void init_edge_table_buffer() {
+    GLuint buffer;
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(edge_table), edge_table, GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer);
+}
+
+void init_triangle_table_buffer() {
+    GLuint buffer;
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(triangle_table), triangle_table, GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffer);
+}
 
 
 int main() {
@@ -12,26 +82,27 @@ int main() {
     GLuint skybox_vbo, skybox_vao;
     init_buffers(skybox_vbo, skybox_vao);
 
+    GLuint metaballs_vbo, metaballs_vao;
+    init_metaballs(metaballs_vbo, metaballs_vao);
+
     // Cubemap
-    GLuint cubemap_texture = Model::load_cubemap(cube_textures);
+    GLuint cubemap_texture = load_cubemap(cube_textures);
 
     // Shader
-    Shader nanosuit_shader("assets/nanosuit/nanosuit.vs", "assets/nanosuit/nanosuit.fs");
-    Shader skybox_shader("assets/skybox/skybox.vs", "assets/skybox/skybox.fs");
+    Shader skybox_shader(
+            "assets/skybox/shaders/vertex.glsl",
+            "assets/skybox/shaders/fragment.glsl"
+    );
+    skybox_shader.set_uniform("u_skybox", 0);
 
-    skybox_shader.use();
-    skybox_shader.set_uniform("skybox", 0);
+    Shader metaballs_shader(
+            "assets/metaballs/shaders/vertex.glsl",
+            "assets/metaballs/shaders/geometry.glsl",
+            "assets/metaballs/shaders/fragment.glsl"
+    );
 
-    // Model
-    Model nanosuit_model("assets/nanosuit/scene.gltf");
-//    Model nanosuit_model("assets/aircraft/piper_pa18.obj");
-
-    // Uniforms
-    static float coefficient_texture;
-    static float coefficient_reflection;
-    static float coefficient_refraction;
-    static float fresnel_alpha;
-    static float frag_color_mix = 0.5;
+    init_edge_table_buffer();
+    init_triangle_table_buffer();
 
     while (!glfwWindowShouldClose(window)) {
         // Check and call events
@@ -58,42 +129,31 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
 
         ImGui::NewFrame();
-        ImGui::Begin("Settings");
-        ImGui::SliderFloat("Texture", &coefficient_texture, 0.0f, 1.0f);
-        ImGui::SliderFloat("Reflection", &coefficient_reflection, 0.0f, 1.0f);
-        ImGui::SliderFloat("Refraction", &coefficient_refraction, 0.0f, 1.0f);
-        ImGui::SliderFloat("Fresnel alpha", &fresnel_alpha, 0.0f, 2.0f);
-        ImGui::SliderFloat("Frag color mix", &frag_color_mix, 0.0f, 1.0f);
         ImGui::End();
 
-        nanosuit_shader.use();
-        nanosuit_shader.set_uniform("coefficient_texture", coefficient_texture);
-        nanosuit_shader.set_uniform("coefficient_reflection", coefficient_reflection);
-        nanosuit_shader.set_uniform("coefficient_refraction", coefficient_refraction);
-        nanosuit_shader.set_uniform("fresnel_alpha", fresnel_alpha);
-        nanosuit_shader.set_uniform("frag_color_mix", frag_color_mix);
-
         // Init MVP
-        auto model = glm::identity<glm::mat4>();
-        model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5));
-
+        glm::mat4 model = glm::mat4(1);
         glm::mat4 view = camera.view();
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), RATIO, 0.1f, 100.0f);
 
-        nanosuit_shader.set_uniform("model", glm::value_ptr(model));
-        nanosuit_shader.set_uniform("view", glm::value_ptr(view));
-        nanosuit_shader.set_uniform("projection", glm::value_ptr(projection));
-        nanosuit_shader.set_uniform("camera_pos", camera.position());
+        // Metaballs
+        metaballs_shader.use();
+        metaballs_shader.set_uniform("u_model", glm::value_ptr(model));
+        metaballs_shader.set_uniform("u_view", glm::value_ptr(view));
+        metaballs_shader.set_uniform("u_projection", glm::value_ptr(projection));
+        metaballs_shader.set_uniform("u_camera_pos", camera.position());
+        glBindVertexArray(metaballs_vao);
+        glDrawArrays(GL_POINTS, 0, metaballs_vertices.size() / 3);
+        glBindVertexArray(0);
 
-        nanosuit_model.draw(nanosuit_shader);
+        // Init MVP
 
         // Skybox
         glDepthFunc(GL_LEQUAL);
         skybox_shader.use();
         view = glm::mat4(glm::mat3(camera.view()));
-        skybox_shader.set_uniform("view", glm::value_ptr(view));
-        skybox_shader.set_uniform("projection", glm::value_ptr(projection));
+        skybox_shader.set_uniform("u_view", glm::value_ptr(view));
+        skybox_shader.set_uniform("u_projection", glm::value_ptr(projection));
 
         // Skybox cube
         glBindVertexArray(skybox_vao);
