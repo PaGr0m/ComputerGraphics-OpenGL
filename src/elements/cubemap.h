@@ -10,6 +10,7 @@
 
 class Cubemap {
     Shader shader_;
+
     GLuint texture_id_;
     GLuint vao_;
     GLuint vbo_;
@@ -17,9 +18,10 @@ class Cubemap {
 public:
     explicit Cubemap(const Shader &shader)
             : shader_(shader),
+              texture_id_(0),
               vao_(0),
               vbo_(0) {
-        texture_id_ = load_cubemap(cube_textures);
+        texture_id_ = load_cubemap(Buffers::CUBEMAP_TEXTURES);
         init_buffers(vbo_, vao_);
     }
 
@@ -70,70 +72,18 @@ public:
         return textureID;
     }
 
-    static void init_buffers(GLuint &skyboxVBO, GLuint &skyboxVAO) {
-        glGenVertexArrays(1, &skyboxVAO);
-        glGenBuffers(1, &skyboxVBO);
-        glBindVertexArray(skyboxVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    static void init_buffers(GLuint &vbo, GLuint &vao) {
+        auto buffer_data = Buffers::CUBEMAP_VERTICES;
+
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER,
-                     skybox_vertices.size() * sizeof(skybox_vertices[0]),
-                     skybox_vertices.data(),
+                     buffer_data.size() * sizeof(buffer_data[0]),
+                     buffer_data.data(),
                      GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) nullptr);
     }
-
-private:
-    inline static const std::vector<GLfloat> skybox_vertices = {
-            -20.0f, 20.0f, -20.0f,
-            -20.0f, -20.0f, -20.0f,
-            20.0f, -20.0f, -20.0f,
-            20.0f, -20.0f, -20.0f,
-            20.0f, 20.0f, -20.0f,
-            -20.0f, 20.0f, -20.0f,
-
-            -20.0f, -20.0f, 20.0f,
-            -20.0f, -20.0f, -20.0f,
-            -20.0f, 20.0f, -20.0f,
-            -20.0f, 20.0f, -20.0f,
-            -20.0f, 20.0f, 20.0f,
-            -20.0f, -20.0f, 20.0f,
-
-            20.0f, -20.0f, -20.0f,
-            20.0f, -20.0f, 20.0f,
-            20.0f, 20.0f, 20.0f,
-            20.0f, 20.0f, 20.0f,
-            20.0f, 20.0f, -20.0f,
-            20.0f, -20.0f, -20.0f,
-
-            -20.0f, -20.0f, 20.0f,
-            -20.0f, 20.0f, 20.0f,
-            20.0f, 20.0f, 20.0f,
-            20.0f, 20.0f, 20.0f,
-            20.0f, -20.0f, 20.0f,
-            -20.0f, -20.0f, 20.0f,
-
-            -20.0f, 20.0f, -20.0f,
-            20.0f, 20.0f, -20.0f,
-            20.0f, 20.0f, 20.0f,
-            20.0f, 20.0f, 20.0f,
-            -20.0f, 20.0f, 20.0f,
-            -20.0f, 20.0f, -20.0f,
-
-            -20.0f, -20.0f, -20.0f,
-            -20.0f, -20.0f, 20.0f,
-            20.0f, -20.0f, -20.0f,
-            20.0f, -20.0f, -20.0f,
-            -20.0f, -20.0f, 20.0f,
-            20.0f, -20.0f, 20.0f
-    };
-
-    const std::vector<std::string> cube_textures = {
-            "assets/cubemap/textures/simple/right.jpg",
-            "assets/cubemap/textures/simple/left.jpg",
-            "assets/cubemap/textures/simple/top.jpg",
-            "assets/cubemap/textures/simple/bottom.jpg",
-            "assets/cubemap/textures/simple/front.jpg",
-            "assets/cubemap/textures/simple/back.jpg"
-    };
 };
