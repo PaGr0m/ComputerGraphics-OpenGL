@@ -6,8 +6,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 class Camera {
+    const GLfloat MOUSE_SENSITIVITY = 45.0f;
+
+    glm::vec3 position_{};
+
+    GLfloat pitch_ = 0.0f;
+    GLfloat yaw_ = 0.0f;
+
+    GLfloat zoom_ = 45.0f;
+    
 public:
     explicit Camera(glm::vec3 position) {
         position_ = position;
@@ -55,15 +63,4 @@ public:
 
         return pos = glm::vec3(rotate * glm::vec4(pos, 1.0f));
     }
-
-private:
-    const GLfloat MOUSE_SENSITIVITY = 45.0f;
-
-private:
-    glm::vec3 position_{};
-
-    GLfloat pitch_ = 0.0f;
-    GLfloat yaw_ = 0.0f;
-
-    GLfloat zoom_ = 45.0f;
 };
