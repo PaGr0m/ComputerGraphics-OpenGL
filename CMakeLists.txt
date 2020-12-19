@@ -18,17 +18,23 @@ add_executable(
         ${PROJECT_NAME}
 
         src/main.cpp
-        src/initials.h
-        src/buffers.h
+        src/utils/settings.h
+        src/utils/buffers.h
 
         src/utils/shader.cpp
-        src/utils/camera.h
+        src/elements/camera.h
+
+        src/elements/opengl.h
+        src/elements/window.h
+        src/elements/cubemap.h
+        src/elements/metaballs.h
 
         bindings/imgui_impl_glfw.cpp
         bindings/imgui_impl_opengl3.cpp
 
-        assets/skybox/shaders/vertex.glsl
-        assets/skybox/shaders/fragment.glsl
+        # Shaders
+        assets/cubemap/shaders/vertex.glsl
+        assets/cubemap/shaders/fragment.glsl
 
         assets/metaballs/shaders/fragment.glsl
         assets/metaballs/shaders/geometry.glsl
